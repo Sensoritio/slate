@@ -2,10 +2,8 @@
 title: API Reference
 
 language_tabs: # must be one of https://git.io/vQNgJ
-  - shell
-  - ruby
-  - python
-  - javascript
+  - json
+  - Javascript
 
 toc_footers:
   - <a href='#'>Sign Up for a Developer Key</a>
@@ -20,50 +18,77 @@ code_clipboard: true
 
 meta:
   - name: description
-    content: Documentation for the Kittn API
+    content: Documentation for the LetsgoWallet API
 ---
 
 # Introduction
 
-Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.
+Welcome to the LetsgoWallet API! You can use our API to access LetsgoWallet API endpoints, which can expose different functionalities of the wallet like registration, cash-in, cash-out, and others.
 
-We have language bindings in Shell, Ruby, Python, and JavaScript! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
+We have language bindings in json and JavaScript! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
 
 This example API documentation page was created with [Slate](https://github.com/slatedocs/slate). Feel free to edit it and use it as a base for your own API's documentation.
 
-# Authentication
+# Registration
 
-> To authorize, use this code:
+> To register, use this code:
 
-```ruby
-require 'kittn'
+```json
+{
+"method":"POST",
+"url": "https://us-central1-clockpay.cloudfunctions.net/ussd-auth"
+},
+{
+ "headers": [
+              {"Content-Type":"application/json"},
+			  {"Accept":"application/json"}
+]
+},
+{
+"body":{
+     "username" : "deo@sensorit.io",
+     "accountIdentifier": "CELLPHONE",
+     "phoneNumber": "+27823214215",
+     "firstname": "Deo",
+     "lastname": "Tshivhenga",
+     "kycLevel":"LOW",
+     "operation" : "register",
+     "accountType": "personal"
+}
+}
+> The above command returns JSON structured like this:
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-```
-
-```shell
-# With shell, you can just pass the correct header with each request
-curl "api_endpoint_here" \
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
+```json
+{
+    "user": [
+        {
+            "uid": "john@doe.com",
+            "displayName": null,
+            "photoURL": null,
+            "email": "john@doe.com",
+            "phoneNumber": null,
+            "providerId": "password"
+        }
+    ],
+    "wallets": {
+        "user": "john@doe.com",
+        "pin": 5115,
+        "status": "ACTIVE",
+        "summaryTransactions": [],
+        "createdAt": "1631303729341",
+        "type": "personal",
+        "currency": "ZAR",
+        "account": "udzhrlo38",
+        "runningBalance": 0
+    }
+}
 ```
 
 > Make sure to replace `meowmeowmeow` with your API key.
 
-Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
+LetsgoWallet uses API keys to allow access to the API. The registration endpoint will respond with a refreshable token, which you can use unless you use custom authentication.
 
-Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
+LetsgoWallet expects for the API key to be included in all API requests to the server in a header that looks like the following:
 
 `Authorization: meowmeowmeow`
 
@@ -71,34 +96,21 @@ Kittn expects for the API key to be included in all API requests to the server i
 You must replace <code>meowmeowmeow</code> with your personal API key.
 </aside>
 
-# Kittens
+# Profile
 
-## Get All Kittens
+## Get profile
 
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get()
-```
-
-```shell
-curl "http://example.com/api/kittens" \
-  -H "Authorization: meowmeowmeow"
-```
-
-```javascript
-const kittn = require('kittn');
-
-let api = kittn.authorize('meowmeowmeow');
-let kittens = api.kittens.get();
+```json
+{
+"method":"GET",
+"url": "https://us-central1-clockpay.cloudfunctions.net/wallet-api/api/v1/profile?username"
+},
+{
+ "headers": [
+              {"Content-Type":"application/json"},
+			  {"Accept":"application/json"}
+]
+}
 ```
 
 > The above command returns JSON structured like this:
@@ -142,16 +154,16 @@ Remember — a happy kitten is an authenticated kitten!
 ## Get a Specific Kitten
 
 ```ruby
-require 'kittn'
+require 'LetsgoWallet'
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
+api = LetsgoWallet::APIClient.authorize!('meowmeowmeow')
 api.kittens.get(2)
 ```
 
 ```python
-import kittn
+import LetsgoWallet
 
-api = kittn.authorize('meowmeowmeow')
+api = LetsgoWallet.authorize('meowmeowmeow')
 api.kittens.get(2)
 ```
 
@@ -161,9 +173,9 @@ curl "http://example.com/api/kittens/2" \
 ```
 
 ```javascript
-const kittn = require('kittn');
+const LetsgoWallet = require('LetsgoWallet');
 
-let api = kittn.authorize('meowmeowmeow');
+let api = LetsgoWallet.authorize('meowmeowmeow');
 let max = api.kittens.get(2);
 ```
 
@@ -196,16 +208,16 @@ ID | The ID of the kitten to retrieve
 ## Delete a Specific Kitten
 
 ```ruby
-require 'kittn'
+require 'LetsgoWallet'
 
-api = Kittn::APIClient.authorize!('meowmeowmeow')
+api = LetsgoWallet::APIClient.authorize!('meowmeowmeow')
 api.kittens.delete(2)
 ```
 
 ```python
-import kittn
+import LetsgoWallet
 
-api = kittn.authorize('meowmeowmeow')
+api = LetsgoWallet.authorize('meowmeowmeow')
 api.kittens.delete(2)
 ```
 
@@ -216,9 +228,9 @@ curl "http://example.com/api/kittens/2" \
 ```
 
 ```javascript
-const kittn = require('kittn');
+const LetsgoWallet = require('LetsgoWallet');
 
-let api = kittn.authorize('meowmeowmeow');
+let api = LetsgoWallet.authorize('meowmeowmeow');
 let max = api.kittens.delete(2);
 ```
 
